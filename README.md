@@ -1,21 +1,122 @@
-[![Check Assignment](https://github.com/sta523-fa24/project-team_name/workflows/Check%20Assignment/badge.svg)](https://github.com/sta523-fa24/project-team_name/actions?query=workflow:%22Check%20Assignment%22)
+# NCAA Men's Basketball Game Data Visualization and Analysis  
+
+**Authors:**  
+Yixiao Wang · Beijie Ji · Yiming Cheng · Zhihao Chen · Weitong Liang
+
+---
+
+## Introduction
+
+The goal of this project is to build an interactive **Shiny web application** for visualizing and analyzing NCAA men's basketball data. The app aggregates historical game results, player and team statistics, and real‑time updates, providing a foundation for future predictive modeling.
+
+NCAA men’s basketball, with the excitement of **March Madness**, is a major cultural and athletic phenomenon in the U.S. As Duke students and basketball fans, we aimed to create a platform that allows users to explore team performance, game dynamics, and player contributions in a visually appealing and intuitive way — with special focus on Duke University.
+
+Our app includes five modules:
+
+- **Game Data** — View games, scores, win probabilities, and player stats  
+- **Team & Player Dashboard** — Explore team histories, schedules, performance metrics  
+- **Schedule** — Real‑time NCAA game info + Duke‑specific updates  
+- **Prediction** — Baseline model predicting Duke vs UNC outcomes  
+- **Write‑Up** — Project explanation and methodology
+
+---
+
+## Methods / Implementation
+
+We primarily use `ncaahoopR` and NCAA official data sources. Since we encountered errors and inconsistencies in official data, we developed custom scraping, cleaning, and validation functions to ensure accuracy before visualization.
+
+---
+
+## Competition Data Module
+
+### Motivation
+
+While NCAA data is publicly available, we found:
+
+- **Duplicated player records**
+- **Incorrect team names**
+- **Difficult-to-query official interface**
+
+Example: The official NCAA page for Purdue vs UConn (Apr 8, 2024) showed incorrect school names and duplicated player entries. Our app **corrects these issues**, providing clean, reliable stats.
+
+### Key Features
+
+- Dynamic win probability chart
+- Team stats comparison (rebounds, assists, shooting %, etc.)
+- Player stats display w/ **flower charts** and **tables**
+- Team and player logos for enhanced UI
+- Interactive collapsible UI components
+
+We initially used Plotly, but switched to **echarts4r** for smoother performance and better real‑time rendering.
+
+### Custom Helper Functions
+
+| Function | Purpose |
+|---|---|
+`wp_chart` | Build win‑probability timelines & excitement index  
+`get_compe_stats` | Extract shot, score, and player behavior statistics  
+`convert_game_data` | Clean box score data, split starters / bench, remove duplicates  
+
+---
+
+## Team & Player Data Module
+
+### Structure
+
+- **Team selector panel** with logos, conference filters, and search
+- Detailed **team pages**:
+  - Season schedules
+  - Game results
+  - Player stats tables
+  - Assist network graphs (team‑level + player‑level)
+
+### Methods
+
+- Curated missing team logos
+- Built interactive navigation bar
+- Used `ncaahoopR::assist_network()` and customized visual layer to highlight passing dynamics
+- Structured statistical summaries for both team‑ and player‑level exploration
+
+---
+
+## Prediction Module
+
+We implemented a **baseline XGBoost model** to predict outcomes of **Duke vs UNC games**.
+
+### Features Used
+- Game index
+- Home/away flags
+- Score differences (target = home score − away score)
+
+### Model Notes
+
+- Train/test split: **80% / 20%**
+- Objective: regression
+- Key parameters: `eta=0.1`, `max_depth=3`, early stopping
+- We pre‑processed data due to `ncaahoopR` parsing delays
+
+The model outputs:
+
+- Predicted point margin
+- Predicted winner
+- Rounded results for clarity
+
+> This prediction module is a **proof‑of‑concept** — future iterations may incorporate richer features and advanced modeling.
+
+---
+
+##  UI / UX Design
+
+- Unified multi‑page Shiny app
+- Home page with rotating NCAA/Duke basketball images
+- Navigation styled in NCAA theme colors
+- Real‑time update widgets:
+  - Duke countdown to next game
+  - Latest Duke result
+  - NCAA games today
+- Responsive layout, collapsible blocks, and custom CSS
+
+---
 
 
-Sta 523 - Final Project
------------
 
-Completed final project is due by 5:00 pm on Wednesday, December 11th.
-
-## Guidelines
-
-1. The primary goal of the project is to do something interesting using something related to the course. This is purposefully open ended to give you the opportunity to work on something you are interested in and to produce work that you could potentially show to a prospective employer or use as part of your graduation portfolio.
- 
-1. The primary way in which you will be evaluate will be based on the evidence of effort in your project and the quality of the write up. What this means is that a "failed" project (e.g. an analysis without a significant result) that is well documented will receive a better grade than a less ambitious "successful" project with a worse write up. 
-  
-    The expectation is that most projects should be roughly 5-15 pages - including text, code, figures, and other output. This is meant only as a very rough guide to calibrate your work (there are no penalties for the report being too short or too long).
-
-1. We have included a very bare template, `project.qmd` which only includes basic section headings. Feel free to add, adjust, remove these as needed to fit your specific project, they are included only as general guidelines for structuring your write up.
-
-1. You may include all of your code in the qmd document or in one or more R script files - make sure your write up makes it clear how the code is meant to be run and how your results can reproduced. Additional data files and other supplementary materials are also fine as long as they are neatly organized and explicitly discussed in the write up.
-
-1. We have included a basic github action to render your project - if there are issues with this (e.g. data is too large to include, package dependency issues, etc.) then you are welcome to instead include the rendered html in your repository. If you do this, please make sure to include the raw qmd file as well so that we can see the code. In this case you are also welcome to delete or disable the GitHub Action.
